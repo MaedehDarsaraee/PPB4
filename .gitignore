@@ -1,0 +1,41 @@
+# ---------------------------------------------------------------------------
+# Trained models and nearest-neighbour data (~4.8 GB) are distributed
+# separately, not through git. See the README for where to download them.
+# ---------------------------------------------------------------------------
+models/
+nn_data/
+
+# Source ChEMBL data and intermediates
+chebml_35_full_data.csv
+final_limited_35_df.pkl
+filtered_df.parquet
+protein_class_chembl_35.csv
+target_id_to_name_mapping.txt
+ppb4_*_predictions_fold_*.pkl
+*.pkl
+*.parquet
+*.npy
+*.h5
+
+# Runtime output
+queries/
+results/
+
+# JSME source archive (the unpacked editor lives in static/jsme)
+JSME_2024-04-29.zip
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+myenv/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+ngrok.exe

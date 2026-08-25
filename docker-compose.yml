@@ -1,0 +1,14 @@
+services:
+  ppb4:
+    build: .
+    image: ppb4:latest
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_HOST: "0.0.0.0"
+      FLASK_DEBUG: "false"
+    volumes:
+      # Downloaded separately -- see the README. Edit the left-hand paths to
+      # wherever you unpacked them.
+      - ./models:/app/models:ro
+      - ./nn_data:/app/nn_data:ro

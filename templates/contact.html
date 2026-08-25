@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maedeh Darsaraee">
+    <title>PPB4 Contact</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+                    },
+                    colors: {
+                        accent: {
+                            50:  '#f0fdfa', 100: '#ccfbf1',
+                            500: '#14b8a6', 600: '#0d9488',
+                            700: '#0f766e', 800: '#115e59',
+                        },
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        body { background-color: #fafafa; }
+    </style>
+</head>
+
+<body class="font-sans text-gray-900 antialiased">
+
+    <!-- =================================================================== -->
+    <!-- NAV -->
+    <!-- =================================================================== -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-3">
+                <svg width="28" height="28" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <g stroke="#0f766e" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.55">
+                        <line x1="32" y1="32" x2="12" y2="14"/>
+                        <line x1="32" y1="32" x2="52" y2="16"/>
+                        <line x1="32" y1="32" x2="56" y2="40"/>
+                        <line x1="32" y1="32" x2="38" y2="56"/>
+                        <line x1="32" y1="32" x2="10" y2="44"/>
+                    </g>
+                    <g fill="#0f766e">
+                        <circle cx="12" cy="14" r="2.4"/>
+                        <circle cx="52" cy="16" r="2.8"/>
+                        <circle cx="56" cy="40" r="2.2"/>
+                        <circle cx="38" cy="56" r="2.6"/>
+                        <circle cx="10" cy="44" r="2.4"/>
+                    </g>
+                    <circle cx="32" cy="32" r="5" fill="#0f766e"/>
+                </svg>
+                <span class="flex items-baseline gap-2">
+                    <span class="font-medium text-xl tracking-tight">PPB<span class="text-accent-700">4</span></span>
+                    <span class="text-xs text-gray-500 italic font-serif hidden sm:inline">Polypharmacology Browser</span>
+                </span>
+            </a>
+            <div class="flex items-center gap-6 text-sm">
+                <a href="/" class="text-gray-700 hover:text-accent-700 transition">Home</a>
+                <a href="/tutorial" class="text-gray-700 hover:text-accent-700 transition">Tutorial</a>
+                <a href="/faq" class="text-gray-700 hover:text-accent-700 transition">FAQ</a>
+                <a href="/contact" class="text-gray-700 hover:text-accent-700 transition">Contact</a>
+                <span class="w-px h-4 bg-gray-300"></span>
+                <a href="https://gdb.unibe.ch/" target="_blank"
+                   class="text-gray-500 hover:text-accent-700 transition">Reymond Group ↗</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- =================================================================== -->
+    <!-- HEADER -->
+    <!-- =================================================================== -->
+    <section class="max-w-4xl mx-auto px-6 pt-12 pb-8">
+        <h1 class="text-4xl font-bold tracking-tight">Contact</h1>
+        <p class="mt-3 text-lg text-gray-600 max-w-2xl">
+            Questions, bug reports, collaboration enquiries, or feedback are all welcome.
+        </p>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- CONTACT CARDS -->
+    <!-- =================================================================== -->
+    <section class="max-w-4xl mx-auto px-6 pb-12">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Maedeh / developer -->
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Developer</p>
+                <h3 class="text-lg font-semibold text-gray-900">Maedeh Darsaraee</h3>
+                <p class="text-sm text-gray-500 mt-0.5">PhD candidate, Reymond Group</p>
+                <p class="mt-4 text-sm text-gray-600 leading-relaxed">
+                </p>
+                <a href="mailto:maedeh.darsaraee@unibe.ch"
+                   class="mt-5 inline-flex items-center gap-2 text-sm font-medium text-accent-700 hover:text-accent-800 transition">
+                    maedeh.darsaraee@unibe.ch
+                    <span aria-hidden="true">→</span>
+                </a>
+            </div>
+
+            <!-- PI -->
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Principal investigator</p>
+                <h3 class="text-lg font-semibold text-gray-900">Prof. Jean-Louis Reymond</h3>
+                <p class="text-sm text-gray-500 mt-0.5">Group leader, University of Bern</p>
+                <p class="mt-4 text-sm text-gray-600 leading-relaxed">
+                </p>
+                <a href="mailto:jean-louis.reymond@unibe.ch"
+                   class="mt-5 inline-flex items-center gap-2 text-sm font-medium text-accent-700 hover:text-accent-800 transition">
+                    jean-louis.reymond@unibe.ch
+                    <span aria-hidden="true">→</span>
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- ADDRESS / AFFILIATION -->
+    <!-- =================================================================== -->
+    <section class="max-w-4xl mx-auto px-6 pb-12">
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Affiliation</p>
+            <p class="text-sm text-gray-700 leading-relaxed">
+                Reymond Group<br>
+                Department of Chemistry, Biochemistry and Pharmaceutical Sciences<br>
+                University of Bern<br>
+                Freiestrasse 3, 3012 Bern, Switzerland
+            </p>
+            <a href="https://gdb.unibe.ch/" target="_blank"
+               class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-accent-700 hover:text-accent-800 transition">
+                Visit the Reymond Group website
+                <span aria-hidden="true">↗</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SOCIAL / FOLLOW US -->
+    <!-- =================================================================== -->
+    <section class="max-w-4xl mx-auto px-6 pb-20">
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Follow the group</p>
+        <div class="flex flex-wrap gap-3">
+            <a href="https://www.linkedin.com/in/reymond-group-4a2712289/" target="_blank"
+               class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:border-accent-500 hover:text-accent-700 rounded-lg transition">
+                LinkedIn
+            </a>
+            <a href="https://x.com/reymondgroup" target="_blank"
+               class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:border-accent-500 hover:text-accent-700 rounded-lg transition">
+                X
+            </a>
+            <a href="https://bsky.app/profile/reymondgroup.bsky.social" target="_blank"
+               class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:border-accent-500 hover:text-accent-700 rounded-lg transition">
+                Bluesky
+            </a>
+        </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- FOOTER -->
+    <!-- =================================================================== -->
+    <footer class="border-t border-gray-200 bg-white">
+        <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div>
+                <div class="font-mono font-semibold">PPB4</div>
+                <p class="text-sm text-gray-500 mt-1">Reymond Group · University of Bern</p>
+            </div>
+            <div class="flex items-center gap-4 text-gray-400">
+                <!-- Website (external link icon) -->
+                <a href="https://gdb.unibe.ch/" target="_blank" aria-label="Reymond Group website"
+                class="hover:text-accent-700 transition" title="Reymond Group website">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M3 12h18"/>
+                        <path d="M12 3a13.5 13.5 0 0 1 0 18a13.5 13.5 0 0 1 0 -18"/>
+                    </svg>
+                </a>
+
+                <!-- LinkedIn -->
+                <a href="https://www.linkedin.com/in/reymond-group-4a2712289/" target="_blank" aria-label="LinkedIn"
+                class="hover:text-accent-700 transition" title="LinkedIn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.36V9h3.41v1.56h.05a3.74 3.74 0 0 1 3.36-1.85c3.6 0 4.27 2.37 4.27 5.45zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13M7.12 20.45H3.56V9h3.56zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0"/>
+                    </svg>
+                </a>
+
+                <!-- X (formerly Twitter) -->
+                <a href="https://x.com/reymondgroup" target="_blank" aria-label="X"
+                class="hover:text-accent-700 transition" title="X (Twitter)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </a>
+
+                <!-- Bluesky -->
+                <a href="https://bsky.app/profile/reymondgroup.bsky.social" target="_blank" aria-label="Bluesky"
+                class="hover:text-accent-700 transition" title="Bluesky">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M5.5 3.4C7.94 5.27 10.56 9.04 11.5 11c.93-1.96 3.56-5.73 6-7.6 1.76-1.34 4.6-2.38 4.6.85 0 .65-.37 5.45-.59 6.23-.75 2.7-3.51 3.4-5.96 2.98 4.28.73 5.37 3.13 3.02 5.53-4.46 4.56-6.4-1.15-6.9-2.61-.09-.27-.13-.4-.13-.29 0-.11-.04.02-.13.29-.5 1.46-2.44 7.17-6.9 2.61-2.35-2.4-1.26-4.8 3.02-5.53-2.45.42-5.21-.28-5.96-2.98-.22-.78-.59-5.58-.59-6.23 0-3.23 2.84-2.19 4.6-.85z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

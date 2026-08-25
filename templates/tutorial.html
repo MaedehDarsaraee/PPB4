@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maedeh Darsaraee">
+    <title>PPB4 Tutorial</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+                    },
+                    colors: {
+                        accent: {
+                            50:  '#f0fdfa', 100: '#ccfbf1',
+                            500: '#14b8a6', 600: '#0d9488',
+                            700: '#0f766e', 800: '#115e59',
+                        },
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        body { background-color: #fafafa; }
+        /* Smooth-scroll on in-page anchor links */
+        html { scroll-behavior: smooth; }
+        /* Offset for sticky nav when jumping to anchors */
+        section[id] { scroll-margin-top: 5rem; }
+        /* Nice prose defaults inside .prose blocks */
+        .prose p { margin-bottom: 0.9rem; line-height: 1.7; color: #374151; }
+        .prose ul { margin-bottom: 0.9rem; padding-left: 1.25rem; list-style: disc; color: #374151; }
+        .prose ul li { margin-bottom: 0.4rem; line-height: 1.6; }
+        .prose code {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 0.85em;
+            background: #f3f4f6;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            color: #0f766e;
+        }
+        .prose strong { color: #111827; font-weight: 600; }
+        .prose table { width: 100%; margin-bottom: 0.9rem; border-collapse: collapse; color: #374151; }
+        .prose thead th {
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            padding: 0 1rem 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+        .prose tbody td {
+            padding: 0.7rem 1rem 0.7rem 0;
+            border-bottom: 1px solid #f3f4f6;
+            line-height: 1.6;
+            vertical-align: top;
+        }
+        .prose thead th:last-child, .prose tbody td:last-child { padding-right: 0; }
+        .prose tbody tr:last-child td { border-bottom: none; }
+    </style>
+</head>
+
+<body class="font-sans text-gray-900 antialiased">
+
+    <!-- =================================================================== -->
+    <!-- NAV -->
+    <!-- =================================================================== -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-3">
+                <svg width="28" height="28" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <g stroke="#0f766e" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.55">
+                        <line x1="32" y1="32" x2="12" y2="14"/>
+                        <line x1="32" y1="32" x2="52" y2="16"/>
+                        <line x1="32" y1="32" x2="56" y2="40"/>
+                        <line x1="32" y1="32" x2="38" y2="56"/>
+                        <line x1="32" y1="32" x2="10" y2="44"/>
+                    </g>
+                    <g fill="#0f766e">
+                        <circle cx="12" cy="14" r="2.4"/>
+                        <circle cx="52" cy="16" r="2.8"/>
+                        <circle cx="56" cy="40" r="2.2"/>
+                        <circle cx="38" cy="56" r="2.6"/>
+                        <circle cx="10" cy="44" r="2.4"/>
+                    </g>
+                    <circle cx="32" cy="32" r="5" fill="#0f766e"/>
+                </svg>
+                <span class="flex items-baseline gap-2">
+                    <span class="font-medium text-xl tracking-tight">PPB<span class="text-accent-700">4</span></span>
+                    <span class="text-xs text-gray-500 italic font-serif hidden sm:inline">Polypharmacology Browser</span>
+                </span>
+            </a>
+            <div class="flex items-center gap-6 text-sm">
+                <a href="/" class="text-gray-700 hover:text-accent-700 transition">Home</a>
+                <a href="/tutorial" class="text-gray-700 hover:text-accent-700 transition">Tutorial</a>
+                <a href="/faq" class="text-gray-700 hover:text-accent-700 transition">FAQ</a>
+                <a href="/contact" class="text-gray-700 hover:text-accent-700 transition">Contact</a>
+                <span class="w-px h-4 bg-gray-300"></span>
+                <a href="https://gdb.unibe.ch/" target="_blank"
+                   class="text-gray-500 hover:text-accent-700 transition">Reymond Group ↗</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- =================================================================== -->
+    <!-- PAGE HEADER -->
+    <!-- =================================================================== -->
+    <section class="max-w-6xl mx-auto px-6 pt-12 pb-8">
+        <h1 class="text-4xl font-bold tracking-tight">Tutorial</h1>
+        <p class="mt-3 text-lg text-gray-600 max-w-2xl">
+            A short guide to running your first prediction with PPB4 and making sense of the results.
+        </p>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- LAYOUT: sticky TOC on the left + content on the right -->
+    <!-- =================================================================== -->
+    <section class="max-w-6xl mx-auto px-6 pb-20">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+
+            <!-- TABLE OF CONTENTS -->
+            <aside class="lg:col-span-1">
+                <div class="lg:sticky lg:top-24">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">On this page</p>
+                    <nav class="text-sm space-y-2">
+                        <a href="#overview"      class="block text-gray-600 hover:text-accent-700">1. Overview</a>
+                        <a href="#first-pred"    class="block text-gray-600 hover:text-accent-700">2. Your first prediction</a>
+                        <a href="#reading"       class="block text-gray-600 hover:text-accent-700">3. Reading the results</a>
+                        <a href="#fingerprints"  class="block text-gray-600 hover:text-accent-700">4. Choosing a fingerprint</a>
+                        <a href="#act-vs-inact"  class="block text-gray-600 hover:text-accent-700">5. Active vs. inactive</a>
+                        <a href="#filters"       class="block text-gray-600 hover:text-accent-700">6. Filtering by target type</a>
+                        <a href="#neighbors"     class="block text-gray-600 hover:text-accent-700">7. Similar known compounds</a>
+                        <a href="#batch"         class="block text-gray-600 hover:text-accent-700">8. Predicting multiple compounds</a>
+                        <a href="#sharing"       class="block text-gray-600 hover:text-accent-700">9. Sharing results</a>
+                        <a href="#cite"          class="block text-gray-600 hover:text-accent-700">10. Citing PPB4</a>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- CONTENT -->
+            <article class="lg:col-span-3 space-y-12 prose">
+
+                <!-- 1 -->
+                <section id="overview">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">1. Overview</h2>
+                    <p>
+                        PPB4 is a target-prediction tool for small molecules. Given a chemical structure,
+                        it estimates which protein targets the molecule is most likely to be
+                        <strong>active</strong> against, and which targets it is most likely to be
+                        <strong>inactive</strong> against. Predictions are produced by multitask deep
+                        neural networks trained on bioactivity data from ChEMBL 35.
+                    </p>
+                    <p>
+                        Compared to its predecessor PPB3, PPB4 introduces three changes worth noting up
+                        front: (a) it now predicts confirmed inactivity in addition to activity, (b) it
+                        is trained on a substantially larger dataset (~5.8 M compound–target
+                        interactions), and (c) it adds the MAP4 fingerprint, which is particularly well
+                        suited to peptides and other macrocyclic molecules.
+                    </p>
+                </section>
+
+                <!-- 2 -->
+                <section id="first-pred">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">2. Your first prediction</h2>
+                    <p>
+                        Open the <a href="/" class="text-accent-700 hover:underline">homepage</a> and follow these steps:
+                    </p>
+                    <ul>
+                        <li><strong>Provide a structure.</strong> Either draw your molecule in the
+                            JSME editor or paste a SMILES string into the <em>Current SMILES</em> box.
+                            The drawing and the SMILES box stay synchronised: editing one updates the
+                            other.</li>
+                        <li><strong>Try the example.</strong> If you just want to see the tool in
+                            action, click <em>Load example</em> to fill in the test compound
+                            (<code>O=C(NO)c4ccc(CN3c1cc(C(F)(F)F)ccc1S(=O)(=O)CC2CCCCC23)cc4</code>) and run it
+                            through the models to see which targets PPB4 predicts it hits, and which
+                            it predicts it does not.</li>
+                        <li><strong>Pick a model.</strong> Consensus is the recommended choice: it combines
+                            all four fingerprint models. See section 4 below for guidance.</li>
+                        <li><strong>Choose how many targets to predict.</strong> The slider goes from 5
+                            to 50; 20 is usually a good starting point.</li>
+                        <li><strong>Click <em>Predict targets</em>.</strong> A new browser tab opens at
+                            a unique results URL such as
+                            <code>ppb4.gdb.tools/result/&lt;id&gt;</code> and renders the predictions.</li>
+                    </ul>
+                    <p>
+                        Predictions usually finish in under five seconds for a single compound.
+                    </p>
+                </section>
+
+                <!-- 3 -->
+                <section id="reading">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">3. Reading the results</h2>
+                    <p>
+                        Each compound you submit is shown as its own card on the results page. Within
+                        each card you will see three tabs:
+                    </p>
+                    <ul>
+                        <li><strong>Combined predictions</strong> (default): active and inactive
+                            predictions merged into one ranked list, sorted by raw confidence
+                            descending. A coloured pill on each row indicates whether the prediction
+                            comes from the active or the inactive model. If the same target appears in
+                            both rankings, it is shown twice, once as active and once as inactive, with
+                            its respective confidence scores.</li>
+                        <li><strong>Active predictions</strong>: the top targets ranked by
+                            P(active) only.</li>
+                        <li><strong>Inactive predictions</strong>: the top targets ranked by
+                            P(inactive) only.</li>
+                    </ul>
+                    <p>
+                        Each row contains the target name (linked to its ChEMBL report card), the
+                        ChEMBL ID, the target type and protein class, the organism, and a confidence
+                        score between 0 and 1. The confidence is the raw output of the corresponding
+                        neural network and should be read as a relative ranking signal rather than as
+                        a calibrated probability.
+                    </p>
+                </section>
+
+                <!-- 4 -->
+                <section id="fingerprints">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">4. Choosing a fingerprint</h2>
+                    <p>
+                        PPB4 offers four fingerprint-based models. They all map your molecule to a
+                        4096-bit vector that the neural network consumes, but they capture chemistry
+                        differently:
+                    </p>
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fingerprint</th>
+                                    <th>What it encodes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>ECFP4</strong></td>
+                                    <td>Circular substructures around each atom, up to a radius of two bonds.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>AtomPair</strong></td>
+                                    <td>Pairs of atoms together with the topological distance between them.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Layered</strong></td>
+                                    <td>An RDKit path-based fingerprint that captures substructure layering.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>MAP4</strong></td>
+                                    <td>MinHash-encoded atom pairs with their surrounding circular substructures.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h3 class="text-base font-semibold text-gray-900 mt-6 mb-2">Which one to use</h3>
+                    <p>
+                        Start with <strong>Consensus</strong>. It runs all four models and keeps, for
+                        each target, the highest score any of them gave, so a target only needs to be
+                        recognised by one fingerprint to surface. Each row on the results page shows
+                        which fingerprint produced its score.
+                    </p>
+                    <p>
+                        Running the same compound through two fingerprints is a good way to gauge
+                        robustness: targets that appear in both rankings are more trustworthy.
+                    </p>
+                </section>
+
+                <!-- 5 -->
+                <section id="act-vs-inact">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">5. Active vs. inactive predictions</h2>
+                    <p>
+                        Most target-prediction tools answer one question: <em>which targets is my
+                        compound likely to bind?</em> PPB4 also answers a second: <em>which targets is
+                        it likely to be inactive against?</em>
+                    </p>
+                    <p>
+                        The two answers come from two separate networks: one trained on confirmed
+                        active interactions, one on confirmed inactive ones. They share the input
+                        fingerprint but have independent output layers over different, partly
+                        overlapping target sets, so their rankings can disagree on the same target.
+                    </p>
+                </section>
+
+                <!-- 6 -->
+                <section id="filters">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">6. Filtering by target type</h2>
+                    <p>
+                        ChEMBL targets cover more than single proteins: cell lines, whole organisms,
+                        protein complexes, protein families and protein–protein interactions are all
+                        included. The <em>Target type</em> dropdown above each results table lets you
+                        focus on one category at a time, and its counts reflect what is actually
+                        present in the current top-N list.
+                    </p>
+                </section>
+
+                <!-- 7 -->
+                <section id="neighbors">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">7. Similar known compounds</h2>
+                    <p>
+                        A prediction on its own does not tell you why the model made it. Every row in
+                        the results table carries a button that answers that question: it shows the
+                        compounds already annotated against that target in the training data, ranked
+                        by how similar they are to your query.
+                    </p>
+                    <p>
+                        The search is restricted to that one target and that one side of the data, so
+                        a row from the active list is compared against known actives for that target,
+                        and a row from the inactive list against known inactives. Similarity is the
+                        Tanimoto coefficient on the same fingerprint used for the prediction, and the
+                        ten closest compounds are returned.
+                    </p>
+                    <p>
+                        Each neighbour shows its ChEMBL ID, linked to its compound report card, its
+                        structure, and its similarity to your query. A prediction backed by a close
+                        neighbour rests on chemistry the model has seen before. The panel has its own
+                        <em>Export CSV</em> button.
+                    </p>
+                </section>
+
+                <!-- 8 -->
+                <section id="batch">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">8. Predicting multiple compounds</h2>
+                    <p>
+                        Switch to the <em>Paste SMILES</em> tab on the homepage to submit a batch.
+                        Enter one SMILES per line: comments, blank lines, and identifiers are not
+                        supported, so keep the input clean. Each compound becomes its own card on the
+                        results page, each with its own filters and tabs.
+                    </p>
+                </section>
+
+                <!-- 9 -->
+                <section id="sharing">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">9. Sharing results</h2>
+                    <p>
+                        Each prediction is saved server-side and served at a unique URL of the form
+                        <code>ppb4.gdb.tools/result/&lt;id&gt;</code>. You can copy that URL from the
+                        browser's address bar and share it with colleagues: anyone with the link will
+                        see exactly the same predictions, filters and tabs included.
+                    </p>
+                    <p>
+                        The <em>Export CSV</em> button at the top of the results page saves the
+                        predictions as a spreadsheet. It writes one row per predicted target, covering
+                        every compound in the batch and all three tabs, with the ChEMBL ID, target
+                        name, type, class, organism and confidence score of each.
+                    </p>
+                </section>
+
+                <!-- 10 -->
+                <section id="cite">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">10. Citing PPB4</h2>
+                    <ul>
+                        <li><strong>PPB4 preprint:</strong> in preparation</li>
+                        <li><strong>PPB3 paper:</strong>
+                            <a href="https://doi.org/10.1021/acs.jcim.6c00299" target="_blank" rel="noopener"
+                               class="text-accent-700 hover:underline">J.&nbsp;Chem.&nbsp;Inf.&nbsp;Model. 2026, 66, 2466&#8211;2473</a></li>
+                    </ul>
+                    <p>
+                        Questions, bug reports, and collaboration enquiries are welcome via the
+                        <a href="/contact" class="text-accent-700 hover:underline">Contact</a> page.
+                    </p>
+                </section>
+
+            </article>
+        </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- FOOTER -->
+    <!-- =================================================================== -->
+    <footer class="border-t border-gray-200 bg-white">
+        <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div>
+                <div class="font-mono font-semibold">PPB4</div>
+                <p class="text-sm text-gray-500 mt-1">Reymond Group · University of Bern</p>
+            </div>
+            <div class="flex items-center gap-4 text-gray-400">
+                <!-- Website (external link icon) -->
+                <a href="https://gdb.unibe.ch/" target="_blank" aria-label="Reymond Group website"
+                class="hover:text-accent-700 transition" title="Reymond Group website">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M3 12h18"/>
+                        <path d="M12 3a13.5 13.5 0 0 1 0 18a13.5 13.5 0 0 1 0 -18"/>
+                    </svg>
+                </a>
+
+                <!-- LinkedIn -->
+                <a href="https://www.linkedin.com/in/reymond-group-4a2712289/" target="_blank" aria-label="LinkedIn"
+                class="hover:text-accent-700 transition" title="LinkedIn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.36V9h3.41v1.56h.05a3.74 3.74 0 0 1 3.36-1.85c3.6 0 4.27 2.37 4.27 5.45zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13M7.12 20.45H3.56V9h3.56zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0"/>
+                    </svg>
+                </a>
+
+                <!-- X (formerly Twitter) -->
+                <a href="https://x.com/reymondgroup" target="_blank" aria-label="X"
+                class="hover:text-accent-700 transition" title="X (Twitter)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </a>
+
+                <!-- Bluesky -->
+                <a href="https://bsky.app/profile/reymondgroup.bsky.social" target="_blank" aria-label="Bluesky"
+                class="hover:text-accent-700 transition" title="Bluesky">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M5.5 3.4C7.94 5.27 10.56 9.04 11.5 11c.93-1.96 3.56-5.73 6-7.6 1.76-1.34 4.6-2.38 4.6.85 0 .65-.37 5.45-.59 6.23-.75 2.7-3.51 3.4-5.96 2.98 4.28.73 5.37 3.13 3.02 5.53-4.46 4.56-6.4-1.15-6.9-2.61-.09-.27-.13-.4-.13-.29 0-.11-.04.02-.13.29-.5 1.46-2.44 7.17-6.9 2.61-2.35-2.4-1.26-4.8 3.02-5.53-2.45.42-5.21-.28-5.96-2.98-.22-.78-.59-5.58-.59-6.23 0-3.23 2.84-2.19 4.6-.85z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
