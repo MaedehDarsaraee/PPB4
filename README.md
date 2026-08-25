@@ -1,4 +1,4 @@
-# PPB4 — Polypharmacology Browser 4
+# PPB4 : Polypharmacology Browser 4
 
 Target prediction from a chemical structure, using multitask deep neural
 networks trained on ChEMBL 35. PPB4 predicts both the targets a molecule is
