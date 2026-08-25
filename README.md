@@ -61,6 +61,15 @@ neighbour search, so `ecfp4_packed.npy` covers the recommended model.
 The `*_smiles.npy` files are build artefacts of `build_nn_indexes.py` and are
 not read at run time — they do not need to be downloaded.
 
+## Requirements
+
+| | |
+|---|---|
+| RAM | 8 GB minimum. Add ~1 GB for each fingerprint you run neighbour searches with. |
+| Disk | 0.9 GB for predictions only, up to 4.8 GB with all four neighbour-search fingerprints. |
+| CPU | Any x86-64. There is no GPU requirement; inference is a single forward pass. |
+| Python | 3.9 (the pinned TensorFlow 2.10 build does not support newer versions). |
+
 ## Running with Docker
 
 ```bash
@@ -109,6 +118,24 @@ route. Total footprint then drops to about 890 MB.
 - **MAP4 is installed from git at build time.** If that repository moves or
   changes, the image will no longer build. Pin it to a commit for anything you
   need to reproduce later.
+
+## Data availability
+
+`models/` and `nn_data/` are hosted separately because of their size:
+
+> **Download:** _link to be added_
+
+## License
+
+_To be decided before public release._
+
+The bundled structure editor in `static/jsme/` is **JSME**, by Peter Ertl and
+Bruno Bienfait, and is redistributed under its own terms. See
+<https://jsme-editor.github.io/>.
+
+## Contact
+
+Questions and bug reports: <https://ppb4.gdb.tools/contact>
 
 ## Citing
 
