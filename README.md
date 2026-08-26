@@ -34,8 +34,8 @@ Eight Keras networks (~95 MB each) plus four small lookup files:
 | file | purpose |
 |---|---|
 | `ppb4_{ecfp4,atompair,layered,map4}_{active,inactive}_full_model.h5` | the eight DNNs |
-| `PPB4_ACTIVE_DNNTARLABELS.txt` | 7,552 target IDs, active model output order |
-| `PPB4_INACTIVE_DNNTARLABELS.txt` | 7,178 target IDs, inactive model output order |
+| `PPB4_ACTIVE_DNNTARLABELS.txt` | 7,551 target IDs, active model output order |
+| `PPB4_INACTIVE_DNNTARLABELS.txt` | 7,177 target IDs, inactive model output order |
 | `PPB4_TARGETSDETAILS.txt` | target names, types, organisms |
 | `PPB4_TARGETCLASSIFICATION.txt` | protein class annotations |
 
