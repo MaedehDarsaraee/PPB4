@@ -27,7 +27,7 @@ build_*.py             Scripts used to build nn_data/ (not needed to run PPB4)
 
 Two directories, both mounted into the container at run time.
 
-### `models/` — required, 761 MB
+### `models/`
 
 Eight Keras networks (~95 MB each) plus four small lookup files:
 
@@ -41,7 +41,7 @@ Eight Keras networks (~95 MB each) plus four small lookup files:
 
 All eight models are loaded at start-up, so all eight must be present.
 
-### `nn_data/` — optional, up to 3.7 GB
+### `nn_data/` 
 
 Powers the "similar known compounds" panel, which shows the training compounds
 most similar to your query for a given target. **Predictions work without it**
