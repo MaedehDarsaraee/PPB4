@@ -11,9 +11,9 @@ from rdkit.Chem.MolStandardize import charge
 from rdkit.DataStructs import ConvertToNumpyArray
 from tensorflow.keras.models import load_model
 
-# ---------------------------------------------------------------------------
-# Environment / TF resource limits
-# ---------------------------------------------------------------------------
+
+# Environment
+
 os.environ["OMP_NUM_THREADS"] = "4"
 os.environ["TF_NUM_INTRAOP_THREADS"] = "4"
 os.environ["TF_NUM_INTEROP_THREADS"] = "2"
@@ -24,9 +24,9 @@ NN_DIR = "nn_data"
 FP_BITS = 4096
 NN_TOP_K = 10
 
-# ---------------------------------------------------------------------------
+
 # Load models (active + inactive for each fingerprint)
-# ---------------------------------------------------------------------------
+
 def _load(name):
     path = os.path.join(MODELS_DIR, name)
     print(f"Loading {path} ...")
@@ -48,9 +48,8 @@ print("All 8 models loaded.")
 CONSENSUS_FPS = ("ECFP4", "AtomPair", "Layered", "MAP4")
 ALL_MODEL_TYPES = list(models.keys()) + ["Consensus"]
 
-# ---------------------------------------------------------------------------
 # Load target labels
-# ---------------------------------------------------------------------------
+
 def _read_labels(filename):
     with open(os.path.join(MODELS_DIR, filename)) as f:
         return [line.strip() for line in f.readlines()[1:] if line.strip()]
@@ -66,9 +65,9 @@ for fp, pair in models.items():
     assert i_dim == len(inactive_labels), f"{fp} inactive model output ({i_dim}) != inactive labels ({len(inactive_labels)})"
 print("Model output dims match label files.")
 
-# ---------------------------------------------------------------------------
+
 # Load target metadata
-# ---------------------------------------------------------------------------
+
 target_details = pd.read_csv(os.path.join(MODELS_DIR, "PPB4_TARGETSDETAILS.txt"), sep="\t")
 target_class   = pd.read_csv(os.path.join(MODELS_DIR, "PPB4_TARGETCLASSIFICATION.txt"), sep="\t")
 
@@ -79,10 +78,9 @@ id_to_type     = target_class.set_index("CHEMBL_ID")["TYPE"].to_dict()
 print(f"Loaded metadata for {len(id_to_name):,} targets.")
 
 
-# ---------------------------------------------------------------------------
+
 # Load shared NN search data (meta + target indexes — same for all fingerprints)
-# Note: per-fingerprint matrices are lazy-loaded on first NN query.
-# ---------------------------------------------------------------------------
+
 print("Loading NN search metadata...")
 
 nn_meta = {}
@@ -166,9 +164,9 @@ def _load_nn_data(fp_name):
         }
         return _nn_data_cache[fp_name]
 
-# ---------------------------------------------------------------------------
-# Fingerprint calculation for predictions (must exactly match training-time code)
-# ---------------------------------------------------------------------------
+
+# Fingerprint calculation for predictions
+
 def _calc_ecfp4(mol):
     return np.array(AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, nBits=FP_BITS))
 
@@ -203,9 +201,7 @@ FP_FUNCS = {
     "MAP4":     _calc_map4,
 }
 
-# ---------------------------------------------------------------------------
-# Query fingerprint computation for NN search (returns packed bits)
-# ---------------------------------------------------------------------------
+# Query fingerprint computation for NN search 
 def _query_fp_packed(smi, fp_func_name):
     """Compute a packed-bit query fingerprint for NN search.
     fp_func_name must match one of the fp_func values in NN_FP_REGISTRY."""
@@ -242,9 +238,9 @@ def _query_fp_packed(smi, fp_func_name):
 
     return None
 
-# ---------------------------------------------------------------------------
+
 # SMILES preprocessing
-# ---------------------------------------------------------------------------
+
 _uncharger = charge.Uncharger()
 
 def preprocess_smiles(smi):
@@ -260,9 +256,9 @@ def preprocess_smiles(smi):
     mol = _uncharger.uncharge(mol)
     return Chem.MolToSmiles(mol, isomericSmiles=False)
 
-# ---------------------------------------------------------------------------
-# Tanimoto NN search (vectorized numpy)
-# ---------------------------------------------------------------------------
+
+# Tanimoto NN search
+
 def _tanimoto_packed_batch(query_packed, candidate_packed_rows, candidate_popcounts):
     inter_packed = candidate_packed_rows & query_packed
     inter_count = np.unpackbits(inter_packed, axis=1).sum(axis=1, dtype=np.int32)
@@ -273,18 +269,18 @@ def _tanimoto_packed_batch(query_packed, candidate_packed_rows, candidate_popcou
     sim[nonzero] = inter_count[nonzero] / union_count[nonzero]
     return sim
 
-# ---------------------------------------------------------------------------
-# Single-fingerprint predictions (helper for both regular and Consensus paths)
-# ---------------------------------------------------------------------------
+
+# Single-fingerprint predictions 
+
 def _predict_single_fp(mol, fp_name, source):
     """Run one model and return a (N_targets,) numpy array of predictions."""
     fp = FP_FUNCS[fp_name](mol)
     X = fp.reshape(1, -1).astype(np.float32)
     return models[fp_name][source].predict(X, verbose=0)[0]
 
-# ---------------------------------------------------------------------------
+
 # Consensus: max P() across the 4 fingerprints, per target
-# ---------------------------------------------------------------------------
+
 def _consensus_predictions(mol, source):
     """
     Run all 4 fingerprint models for a given source ('active' or 'inactive')
@@ -302,9 +298,8 @@ def _consensus_predictions(mol, source):
     winners = [CONSENSUS_FPS[i] for i in winner_idx]
     return merged, winners
 
-# ---------------------------------------------------------------------------
-# Predict for a single SMILES (handles regular and Consensus models)
-# ---------------------------------------------------------------------------
+
+# Predict for a single SMILES 
 def predict_one(smi, fp_name, num_predictions=20, mode="both"):
     mol = Chem.MolFromSmiles(smi)
     if mol is None:
@@ -347,9 +342,7 @@ def _format_row(rank, idx, preds, labels, source_model=None):
         row["source_model"] = source_model
     return row
 
-# ---------------------------------------------------------------------------
-# In-memory results cache
-# ---------------------------------------------------------------------------
+
 _results_cache = {}
 _results_lock = Lock()
 MAX_CACHED_RESULTS = 500
@@ -367,9 +360,8 @@ def _get_result(rid):
     with _results_lock:
         return _results_cache.get(rid)
 
-# ---------------------------------------------------------------------------
 # Flask app
-# ---------------------------------------------------------------------------
+
 app = Flask(__name__)
 
 @app.route("/")
