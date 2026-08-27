@@ -55,8 +55,7 @@ It splits into two tiers:
 | per fingerprint | `<fp>_packed.npy`, `{active,inactive}_<fp>_fp_indices.npy` | 885 MB each | first neighbour query for that fingerprint |
 
 You only need the per-fingerprint block for fingerprints you actually want to
-search with. Note that **Consensus predictions fall back to ECFP4** for the
-neighbour search, so `ecfp4_packed.npy` covers the recommended model.
+search with.
 
 The `*_smiles.npy` files are build artefacts of `build_nn_indexes.py` and are
 not read at run time — they do not need to be downloaded.
