@@ -11,7 +11,7 @@ Public instance: <https://ppb4.gdb.tools>
 ## What this repository contains
 
 Only the application code. The trained models and the nearest-neighbour search
-data are ~4.8 GB and are distributed separately (see below).
+data are ~5.0 GB and are distributed separately (see below).
 
 ```
 ppb4_predict.py        Flask app: prediction, nearest-neighbour search, result pages
@@ -29,17 +29,25 @@ Two directories, both mounted into the container at run time.
 
 ### `models/`
 
-Eight Keras networks (~95 MB each) plus four small lookup files:
+Nine Keras networks plus five small lookup files:
 
 | file | purpose |
 |---|---|
-| `ppb4_{ecfp4,atompair,layered,map4}_{active,inactive}_full_model.h5` | the eight DNNs |
+| `ppb4_{ecfp4,atompair,layered,map4}_{active,inactive}_full_model.h5` | the eight separate DNNs (~95 MB each) |
+| `ppb4_joint_ecfp4_full_model.h5` | the combined three-state model (~220 MB) |
 | `PPB4_ACTIVE_DNNTARLABELS.txt` | 7,551 target IDs, active model output order |
 | `PPB4_INACTIVE_DNNTARLABELS.txt` | 7,177 target IDs, inactive model output order |
+| `PPB4_JOINT_DNNTARLABELS.txt` | 9,158 target IDs, combined model output order |
 | `PPB4_TARGETSDETAILS.txt` | target names, types, organisms |
 | `PPB4_TARGETCLASSIFICATION.txt` | protein class annotations |
 
-All eight models are loaded at start-up, so all eight must be present.
+The eight separate models each emit one sigmoid per target. The combined model
+emits one softmax per target over three states — untested, active, inactive —
+so a single forward pass gives both the active and the inactive list. Its target
+space is wider than the separate models', which is why it carries its own label
+file.
+
+All nine models are loaded at start-up, so all nine must be present.
 
 ### `nn_data/` 
 
@@ -64,8 +72,8 @@ not read at run time — they do not need to be downloaded.
 
 | | |
 |---|---|
-| RAM | 8 GB minimum. Add ~1 GB for each fingerprint you run neighbour searches with. |
-| Disk | 0.9 GB for predictions only, up to 4.8 GB with all four neighbour-search fingerprints. |
+| RAM | 12 GB recommended. The nine models need ~3 GB, and each fingerprint you run neighbour searches with adds ~1 GB while its matrix is resident. 8 GB is enough for predictions alone but will be killed during repeated neighbour searches. |
+| Disk | 1.0 GB for predictions only, up to 5.0 GB with all four neighbour-search fingerprints. |
 | CPU | Any x86-64. There is no GPU requirement; inference is a single forward pass. |
 | Python | 3.9 (the pinned TensorFlow 2.10 build does not support newer versions). |
 
@@ -110,8 +118,9 @@ route. Total footprint then drops to about 890 MB.
 
 ## Notes
 
-- **First start is slow.** Eight Keras models and 125 MB of metadata load before
-  the first request is served. Allow several minutes and at least 8 GB of RAM.
+- **First start is slow.** Nine Keras models and 125 MB of metadata load before
+  the first request is served. Allow two to three minutes. The container will not
+  answer until the log shows `Loaded metadata for 9,158 targets.`
 - **Results are held in memory**, not on disk. A restart invalidates every
   `/result/<id>` URL. The `queries/` and `results/` directories are unused.
 - **MAP4 is installed from git at build time.** If that repository moves or
