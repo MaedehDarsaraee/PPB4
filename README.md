@@ -129,9 +129,20 @@ route. Total footprint then drops to about 890 MB.
 
 ## Data availability
 
-`models/` and `nn_data/` are hosted separately because of their size:
+`models/` and `nn_data/` are too large for this repository and are archived on
+Zenodo:
 
-> **Download:** _link to be added_
+> **Download:** [zenodo.org/records/22752696](https://zenodo.org/records/22752696) — DOI [10.5281/zenodo.22752696](https://doi.org/10.5281/zenodo.22752696)
+
+Unpack both directories next to `ppb4_predict.py`, or point the Docker volume
+mounts at wherever you put them:
+
+```
+ppb4_website/
+├── ppb4_predict.py
+├── models/      # nine networks + five lookup files
+└── nn_data/     # packed fingerprint matrices for the four fingerprints
+```
 
 ## License
 
