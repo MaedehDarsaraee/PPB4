@@ -39,3 +39,13 @@ myenv/
 .DS_Store
 Thumbs.db
 ngrok.exe
+
+# Editor and tooling backups
+*.bak
+*.bak_*
+*.orig
+*.rej
+
+# Large archives distributed separately
+*.rar
+*.zip

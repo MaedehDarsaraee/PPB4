@@ -17,12 +17,20 @@ chebml_35_full_data.csv
 final_limited_35_df.pkl
 JSME_2024-04-29.zip
 
+# Editor and tooling backups -- never ship these
+*.bak
+*.bak_*
+*.orig
+*.rej
+
 # Mounted at run time, never baked into the image
 models/
 nn_data/
 protein_class_chembl_35.csv
 target_id_to_name_mapping.txt
 build_*.py
+time_nn_*.py
 *.ipynb
+*.rar
 README.md
 docker-compose.yml

@@ -2,6 +2,8 @@ services:
   ppb4:
     build: .
     image: ppb4:latest
+    # built locally; never try to fetch it from a registry
+    pull_policy: build
     ports:
       - "5000:5000"
     environment:
@@ -10,5 +12,15 @@ services:
     volumes:
       # Downloaded separately -- see the README. Edit the left-hand paths to
       # wherever you unpacked them.
+      #   models/   ~1.0 GB   9 models + label and metadata files
+      #   nn_data/  ~4.0 GB   packed fingerprint matrices for the 4 fingerprints
       - ./models:/app/models:ro
       - ./nn_data:/app/nn_data:ro
+    # Nine Keras models are held in memory, and the nearest-neighbour matrices
+    # are memory-mapped on first use. 8 GB is comfortable; below ~6 GB the
+    # first neighbour search on each fingerprint is liable to fail.
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+    restart: unless-stopped
