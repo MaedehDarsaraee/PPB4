@@ -1,4 +1,4 @@
-# PPB4 — Polypharmacology Browser 4
+# PPB4 : Polypharmacology Browser 4
 
 Target prediction from a chemical structure, using multitask deep neural
 networks trained on ChEMBL 35. PPB4 predicts both the targets a molecule is
@@ -27,21 +27,21 @@ build_*.py             Scripts used to build nn_data/ (not needed to run PPB4)
 
 Two directories, both mounted into the container at run time.
 
-### `models/` — required, 761 MB
+### `models/`
 
 Eight Keras networks (~95 MB each) plus four small lookup files:
 
 | file | purpose |
 |---|---|
 | `ppb4_{ecfp4,atompair,layered,map4}_{active,inactive}_full_model.h5` | the eight DNNs |
-| `PPB4_ACTIVE_DNNTARLABELS.txt` | 7,552 target IDs, active model output order |
-| `PPB4_INACTIVE_DNNTARLABELS.txt` | 7,178 target IDs, inactive model output order |
+| `PPB4_ACTIVE_DNNTARLABELS.txt` | 7,551 target IDs, active model output order |
+| `PPB4_INACTIVE_DNNTARLABELS.txt` | 7,177 target IDs, inactive model output order |
 | `PPB4_TARGETSDETAILS.txt` | target names, types, organisms |
 | `PPB4_TARGETCLASSIFICATION.txt` | protein class annotations |
 
 All eight models are loaded at start-up, so all eight must be present.
 
-### `nn_data/` — optional, up to 3.7 GB
+### `nn_data/` 
 
 Powers the "similar known compounds" panel, which shows the training compounds
 most similar to your query for a given target. **Predictions work without it**
@@ -55,8 +55,7 @@ It splits into two tiers:
 | per fingerprint | `<fp>_packed.npy`, `{active,inactive}_<fp>_fp_indices.npy` | 885 MB each | first neighbour query for that fingerprint |
 
 You only need the per-fingerprint block for fingerprints you actually want to
-search with. Note that **Consensus predictions fall back to ECFP4** for the
-neighbour search, so `ecfp4_packed.npy` covers the recommended model.
+search with.
 
 The `*_smiles.npy` files are build artefacts of `build_nn_indexes.py` and are
 not read at run time — they do not need to be downloaded.
