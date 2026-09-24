@@ -111,6 +111,13 @@
                 <span class="w-px h-4 bg-gray-300"></span>
                 <a href="https://gdb.unibe.ch/" target="_blank"
                    class="text-gray-500 hover:text-accent-700 transition">Reymond Group ↗</a>
+                <a href="https://github.com/MaedehDarsaraee/PPB4" target="_blank" rel="noopener" aria-label="PPB4 on GitHub"
+                   title="Source code on GitHub"
+                   class="text-gray-500 hover:text-accent-700 transition">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.82 1.1.82 2.22 0 1.6-.02 2.9-.02 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/>
+                    </svg>
+                </a>
             </div>
         </div>
     </nav>
@@ -145,7 +152,8 @@
                         <a href="#neighbors"     class="block text-gray-600 hover:text-accent-700">7. Similar known compounds</a>
                         <a href="#batch"         class="block text-gray-600 hover:text-accent-700">8. Predicting multiple compounds</a>
                         <a href="#sharing"       class="block text-gray-600 hover:text-accent-700">9. Sharing results</a>
-                        <a href="#cite"          class="block text-gray-600 hover:text-accent-700">10. Citing PPB4</a>
+                        <a href="#local"         class="block text-gray-600 hover:text-accent-700">10. Running PPB4 locally</a>
+                        <a href="#cite"          class="block text-gray-600 hover:text-accent-700">11. Citing PPB4</a>
                     </nav>
                 </div>
             </aside>
@@ -209,12 +217,14 @@
                         each card you will see three tabs:
                     </p>
                     <ul>
-                        <li><strong>Combined predictions</strong> (default): active and inactive
-                            predictions merged into one ranked list, sorted by raw confidence
-                            descending. A coloured pill on each row indicates whether the prediction
-                            comes from the active or the inactive model. If the same target appears in
-                            both rankings, it is shown twice, once as active and once as inactive, with
-                            its respective confidence scores.</li>
+                        <li><strong>Merged predictions</strong> (default): active and inactive
+                            predictions brought together into one ranked list, with one row per
+                            target. Coloured pills on each row show which model or models predicted
+                            that target. The active and inactive networks are trained separately, so
+                            the same target can be predicted by both; when that happens the row
+                            carries both pills and both probabilities, shown one under the other, and
+                            nothing is discarded. Targets are ranked by the higher of their two
+                            scores.</li>
                         <li><strong>Active predictions</strong>: the top targets ranked by
                             P(active) only.</li>
                         <li><strong>Inactive predictions</strong>: the top targets ranked by
@@ -316,17 +326,26 @@
                         by how similar they are to your query.
                     </p>
                     <p>
-                        The search is restricted to that one target and that one side of the data, so
-                        a row from the active list is compared against known actives for that target,
-                        and a row from the inactive list against known inactives. Similarity is the
-                        Tanimoto coefficient on the same fingerprint used for the prediction, and the
-                        ten closest compounds are returned.
+                        The panel has two tabs, <strong>Active neighbours</strong> and
+                        <strong>Inactive neighbours</strong>, so you can see both sides of the data
+                        for the same target: the compounds measured as active on it, and those
+                        measured as inactive. Both searches run when the panel opens, so switching
+                        between the tabs is immediate, and each tab shows how many compounds it
+                        found. A target with no known compounds on one side says so rather than
+                        showing an empty panel.
+                    </p>
+                    <p>
+                        Each search is restricted to that one target and that one side of the data.
+                        Similarity is the Tanimoto coefficient on the same fingerprint used for the
+                        prediction, and the ten closest compounds are returned.
                     </p>
                     <p>
                         Each neighbour shows its ChEMBL ID, linked to its compound report card, its
                         structure, and its similarity to your query. A prediction backed by a close
-                        neighbour rests on chemistry the model has seen before. The panel has its own
-                        <em>Export CSV</em> button.
+                        neighbour rests on chemistry the model has seen before, and comparing the two
+                        tabs shows whether the close analogues around your compound were active,
+                        inactive, or a mixture of both. The <em>Export CSV</em> button exports the
+                        tab you are viewing.
                     </p>
                 </section>
 
@@ -359,8 +378,19 @@
                 </section>
 
                 <!-- 10 -->
+                <section id="local">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">10. Running PPB4 locally</h2>
+                    <p>
+                        The whole application, including its Dockerfile, is available at
+                        <a href="https://github.com/MaedehDarsaraee/PPB4" target="_blank" rel="noopener">MaedehDarsaraee/PPB4</a>.
+                        The trained networks and the nearest-neighbour data are distributed separately
+                        because of their size, and are mounted into the container at run time.
+                    </p>
+                </section>
+
+                <!-- 11 -->
                 <section id="cite">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">10. Citing PPB4</h2>
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-3">11. Citing PPB4</h2>
                     <ul>
                         <li><strong>PPB4 preprint:</strong> in preparation</li>
                         <li><strong>PPB3 paper:</strong>
@@ -387,6 +417,14 @@
                 <p class="text-sm text-gray-500 mt-1">Reymond Group · University of Bern</p>
             </div>
             <div class="flex items-center gap-4 text-gray-400">
+                <!-- GitHub -->
+                <a href="https://github.com/MaedehDarsaraee/PPB4" target="_blank" rel="noopener" aria-label="GitHub"
+                   class="hover:text-accent-700 transition" title="Source code on GitHub">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.82 1.1.82 2.22 0 1.6-.02 2.9-.02 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/>
+                    </svg>
+                </a>
+
                 <!-- Website (external link icon) -->
                 <a href="https://gdb.unibe.ch/" target="_blank" aria-label="Reymond Group website"
                 class="hover:text-accent-700 transition" title="Reymond Group website">

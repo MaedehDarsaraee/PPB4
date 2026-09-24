@@ -44,9 +44,19 @@ models = {
 }
 print("All 8 models loaded.")
 
+# ---------------------------------------------------------------------------
+# Joint three-state model (ECFP4): one softmax per target over
+# untested / active / inactive, so both sides come from a single network.
+# Its target space (9,158) is wider than the separate models (7,551 / 7,177),
+# so it carries its own label file.
+# ---------------------------------------------------------------------------
+JOINT_NAME = "Combined(ECFP4)"
+joint_model = _load("ppb4_joint_ecfp4_full_model.h5")
+print(f"Joint model loaded: output {joint_model.output_shape}")
+
 # Fingerprint types that participate in the Consensus
 CONSENSUS_FPS = ("ECFP4", "AtomPair", "Layered", "MAP4")
-ALL_MODEL_TYPES = list(models.keys()) + ["Consensus"]
+ALL_MODEL_TYPES = list(models.keys()) + ["Consensus", JOINT_NAME]
 
 # ---------------------------------------------------------------------------
 # Load target labels
@@ -57,6 +67,10 @@ def _read_labels(filename):
 
 active_labels   = _read_labels("PPB4_ACTIVE_DNNTARLABELS.txt")
 inactive_labels = _read_labels("PPB4_INACTIVE_DNNTARLABELS.txt")
+joint_labels    = _read_labels("PPB4_JOINT_DNNTARLABELS.txt")
+assert joint_model.output_shape[1] == len(joint_labels), (
+    f"joint model output ({joint_model.output_shape[1]}) != joint labels ({len(joint_labels)})")
+print(f"Loaded {len(joint_labels):,} joint labels.")
 print(f"Loaded {len(active_labels):,} active labels, {len(inactive_labels):,} inactive labels.")
 
 for fp, pair in models.items():
@@ -283,6 +297,20 @@ def _predict_single_fp(mol, fp_name, source):
     return models[fp_name][source].predict(X, verbose=0)[0]
 
 # ---------------------------------------------------------------------------
+# Joint model: one forward pass gives both sides
+# ---------------------------------------------------------------------------
+def _joint_predictions(mol):
+    """Return (p_active, p_inactive), each a (N_joint_targets,) array.
+
+    The model emits (n_targets, 3) with channel 0 = untested, 1 = active,
+    2 = inactive, the three summing to 1 for every target.
+    """
+    fp = FP_FUNCS["ECFP4"](mol)
+    X = fp.reshape(1, -1).astype(np.float32)
+    P = joint_model.predict(X, verbose=0)[0]          # (n_targets, 3)
+    return P[:, 1], P[:, 2]
+
+# ---------------------------------------------------------------------------
 # Consensus: max P() across the 4 fingerprints, per target
 # ---------------------------------------------------------------------------
 def _consensus_predictions(mol, source):
@@ -312,11 +340,17 @@ def predict_one(smi, fp_name, num_predictions=20, mode="both"):
 
     out = {}
 
+    joint_cache = _joint_predictions(mol) if fp_name == JOINT_NAME else None
+
     for source, labels in (("active", active_labels), ("inactive", inactive_labels)):
         if mode not in (source, "both"):
             continue
 
-        if fp_name == "Consensus":
+        if fp_name == JOINT_NAME:
+            labels = joint_labels
+            preds = joint_cache[0] if source == "active" else joint_cache[1]
+            winners = None
+        elif fp_name == "Consensus":
             preds, winners = _consensus_predictions(mol, source)
         else:
             preds = _predict_single_fp(mol, fp_name, source)

@@ -112,6 +112,13 @@
                 <span class="w-px h-4 bg-gray-300"></span>
                 <a href="https://gdb.unibe.ch/" target="_blank"
                    class="text-gray-500 hover:text-accent-700 transition">Reymond Group ↗</a>
+                <a href="https://github.com/MaedehDarsaraee/PPB4" target="_blank" rel="noopener" aria-label="PPB4 on GitHub"
+                   title="Source code on GitHub"
+                   class="text-gray-500 hover:text-accent-700 transition">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.82 1.1.82 2.22 0 1.6-.02 2.9-.02 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/>
+                    </svg>
+                </a>
             </div>
         </div>
     </nav>
@@ -211,6 +218,14 @@
                 <p class="text-sm text-gray-500 mt-1">Reymond Group · University of Bern</p>
             </div>
             <div class="flex items-center gap-4 text-gray-400">
+                <!-- GitHub -->
+                <a href="https://github.com/MaedehDarsaraee/PPB4" target="_blank" rel="noopener" aria-label="GitHub"
+                   class="hover:text-accent-700 transition" title="Source code on GitHub">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.82 1.1.82 2.22 0 1.6-.02 2.9-.02 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/>
+                    </svg>
+                </a>
+
                 <!-- Website (external link icon) -->
                 <a href="https://gdb.unibe.ch/" target="_blank" aria-label="Reymond Group website"
                 class="hover:text-accent-700 transition" title="Reymond Group website">
@@ -398,7 +413,7 @@
         }
 
         // ======================================================================
-        // Export ALL predictions (Combined + Active + Inactive) for ALL compounds
+        // Export ALL predictions (Merged + Active + Inactive) for ALL compounds
         // ======================================================================
         function exportAllPredictionsCSV() {
             if (!CURRENT_RESULTS || CURRENT_RESULTS.length === 0) {
@@ -438,20 +453,22 @@
                 const activeRows   = res.active   || [];
                 const inactiveRows = res.inactive || [];
 
-                // Tab 1: Combined (merged + sorted by confidence)
+                // Tab 1: Merged (active and inactive lists brought together)
                 const combined = buildCombined(activeRows, inactiveRows);
                 combined.forEach(r => {
                     allRows.push({
                         ...baseFields,
-                        Tab: "Combined",
+                        Tab: "Merged",
                         Rank: r.rank,
-                        Source: r.source,
+                        Source: r.paired ? "active+inactive" : r.source,
                         Target_ID: r.target_id,
                         Target_name: r.target_name,
                         Target_type: r.type,
                         Target_class: r.class,
                         Organism: r.organism,
                         Confidence: r.confidence,
+                        P_active: r.p_active === null ? "" : r.p_active,
+                        P_inactive: r.p_inactive === null ? "" : r.p_inactive,
                         Source_model: r.source_model || modelType,
                         Target_URL: r.url,
                     });
@@ -698,33 +715,62 @@
         });
 
         // ======================================================================
-        // Combined view builder
+        // Merged view builder
         // ======================================================================
         function buildCombined(activeRows, inactiveRows) {
             const tagged = [];
             (activeRows || []).forEach(r => tagged.push({ ...r, source: "active" }));
             (inactiveRows || []).forEach(r => tagged.push({ ...r, source: "inactive" }));
-            // Deduplicate targets predicted by BOTH models: the active and inactive
-            // networks are independent, so the same target can appear in both lists
-            // (once with P(active), once with P(inactive)). Keep only the higher-
-            // probability call per target, so each target has a single, reconciled
-            // active/inactive assignment. Ties (equal confidence) keep the first seen.
-            const best = {};
+            // A target can be predicted on both sides, so it keeps both labels and
+            // both probabilities on one row rather than being reduced to the
+            // stronger of the two.
+            //
+            // Ranking depends on where the numbers come from:
+            //
+            //   Combined(ECFP4) - one network emits P(active), P(inactive) and
+            //       P(untested) per target, summing to 1.  P(active)+P(inactive)
+            //       is then a real quantity, the probability that the pair was
+            //       measured at all, so the list is ranked by that sum.  Targets
+            //       the model has evidence about come first regardless of
+            //       direction, including the ones where it is genuinely split.
+            //
+            //   separate models - the two scores come from two independently
+            //       trained networks and are not on a common scale, so adding
+            //       them would not mean anything.  Those are ranked by the
+            //       higher of the two instead.
+            const useSum = (CURRENT_PAYLOAD?.model_type === "Combined(ECFP4)");
+
+            const byTarget = {};
             tagged.forEach(r => {
-                const key = r.target_id;
-                const prev = best[key];
-                if (!prev || r.confidence > prev.confidence) {
-                    // record the competing probability from the other model, if any
-                    const other = prev ? prev.confidence : null;
-                    best[key] = { ...r, competing_confidence: other };
-                } else {
-                    prev.competing_confidence = r.confidence;
-                }
+                (byTarget[r.target_id] = byTarget[r.target_id] || []).push(r);
             });
-            const deduped = Object.values(best);
-            deduped.sort((a, b) => b.confidence - a.confidence);
-            deduped.forEach((r, i) => r.rank = i + 1);
-            return deduped;
+
+            const groups = Object.values(byTarget);
+            groups.forEach(g => g.sort((a, b) => b.confidence - a.confidence));
+
+            const score = g => {
+                if (!useSum) return g[0].confidence;
+                return g.reduce((s, r) => s + r.confidence, 0);
+            };
+            groups.sort((a, b) => score(b) - score(a));
+
+            const out = groups.map((g, gi) => {
+                const top = g[0];
+                const act = g.find(r => r.source === "active");
+                const ina = g.find(r => r.source === "inactive");
+                return {
+                    ...top,
+                    rank: gi + 1,
+                    paired: g.length > 1,
+                    p_active: act ? act.confidence : null,
+                    p_inactive: ina ? ina.confidence : null,
+                    confidence: top.confidence,   // the stronger of the two
+                    rank_score: score(g),         // what the row was ranked on
+                    ranked_by_sum: useSum,
+                    source: top.source,
+                };
+            });
+            return out;
         }
 
         // ======================================================================
@@ -758,7 +804,7 @@
 
                     tabsHtml = `
                         <div class="flex gap-1 p-1 bg-gray-100 rounded-lg w-fit">
-                            <button data-target="combined-${i}" class="result-tab px-4 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-gray-900">Combined predictions</button>
+                            <button data-target="combined-${i}" class="result-tab px-4 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-gray-900">Merged predictions</button>
                             <button data-target="active-${i}"   class="result-tab px-4 py-1.5 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900">Active predictions</button>
                             <button data-target="inactive-${i}" class="result-tab px-4 py-1.5 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900">Inactive predictions</button>
                         </div>
@@ -879,17 +925,47 @@
                 const rowSource = isCombined ? r.source : kind;
                 const barColor = rowSource === "active" ? "bg-accent-500" : "bg-rose-400";
 
+                // One row per target. A target predicted by both models carries both
+                // tags here, and both probabilities in the confidence column.
+                const activePill = `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-accent-50 text-accent-700 border border-accent-100">Active</span>`;
+                const inactivePill = `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-rose-50 text-rose-700 border border-rose-100">Inactive</span>`;
                 const sourcePill = isCombined ? `
                     <td class="py-3 pr-3">
-                        ${r.source === "active"
-                            ? `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-accent-50 text-accent-700 border border-accent-100">Active</span>`
-                            : `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-rose-50 text-rose-700 border border-rose-100">Inactive</span>`}
+                        <div class="flex flex-wrap items-center gap-1">
+                            ${r.p_active !== null && r.p_active !== undefined ? activePill : ""}
+                            ${r.p_inactive !== null && r.p_inactive !== undefined ? inactivePill : ""}
+                        </div>
                     </td>
                 ` : "";
 
+                const rowClass = "hover:bg-gray-50";
+                const rankCell = `<td class="py-3 pr-3 text-gray-500 font-mono">${r.rank}</td>`;
+
+                // Both probabilities, one under the other, when the target was
+                // predicted by both models; a single bar otherwise.
+                const confLine = (label, val, colour) => `
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] uppercase tracking-wide w-12 text-gray-500">${label}</span>
+                        <div class="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="conf-bar h-full ${colour}" style="width: ${Math.round(val * 100)}%"></div>
+                        </div>
+                        <span class="font-mono text-xs w-10 text-right text-gray-800">${val.toFixed(2)}</span>
+                    </div>`;
+                const confCell = (isCombined && r.paired)
+                    ? `<div class="space-y-1">
+                           ${confLine("active", r.p_active, "bg-accent-500")}
+                           ${confLine("inactive", r.p_inactive, "bg-rose-400")}
+                       </div>`
+                    : `<div class="flex items-center gap-2">
+                           <div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+                               <div class="conf-bar h-full ${barColor}" style="width: ${pct}%"></div>
+                           </div>
+                           <span class="font-mono text-xs text-gray-700 w-10 text-right">${r.confidence.toFixed(2)}</span>
+                       </div>`;
+
                 return `
-                    <tr class="hover:bg-gray-50" data-type="${normType}">
-                        <td class="py-3 pr-3 text-gray-500 font-mono">${r.rank}</td>
+                    <tr class="${rowClass}" data-type="${normType}">
+                        ${rankCell}
                         ${sourcePill}
                         <td class="py-3 pr-3">
                             <a href="${r.url}" target="_blank" class="font-medium text-gray-900 hover:text-accent-700">
@@ -900,14 +976,7 @@
                         <td class="py-3 pr-3 text-gray-600 text-xs">${escapeHtml(formatTypeLabel(normType))}</td>
                         <td class="py-3 pr-3 text-gray-600">${escapeHtml(r.class || "—")}</td>
                         <td class="py-3 pr-3 text-gray-600 italic">${escapeHtml(r.organism || "—")}</td>
-                        <td class="py-3 pr-3">
-                            <div class="flex items-center gap-2">
-                                <div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                    <div class="conf-bar h-full ${barColor}" style="width: ${pct}%"></div>
-                                </div>
-                                <span class="font-mono text-xs text-gray-700 w-10 text-right">${r.confidence.toFixed(2)}</span>
-                            </div>
-                        </td>
+                        <td class="py-3 pr-3">${confCell}</td>
                         <td class="py-3 pl-3 text-right">
                             <button type="button"
                                     class="nn-btn px-2.5 py-1 text-xs font-medium text-accent-700 bg-accent-50 hover:bg-accent-100 border border-accent-100 rounded-md transition"
@@ -962,33 +1031,13 @@
             });
         }
 
-        async function openNNModal({ compoundIdx, targetId, targetName, source }) {
-            const modal    = document.getElementById("nn_modal");
-            const title    = document.getElementById("nn_modal_title");
-            const subtitle = document.getElementById("nn_modal_subtitle");
-            const body     = document.getElementById("nn_modal_body");
-            const exportBtn = document.getElementById("nn_export_btn");
+        // ======================================================================
+        // Nearest-neighbour modal: one tab for active, one for inactive
+        // ======================================================================
+        let NN_TABS = { active: null, inactive: null };
+        let NN_META = null;
 
-            title.textContent = targetName + " (" + targetId + ")";
-            subtitle.textContent = source === "active"
-                ? "Most similar known active ligands"
-                : "Most similar known inactive compounds";
-
-            // Hide the export button until we successfully load data
-            exportBtn.classList.add("hidden");
-            CURRENT_NN_CONTEXT = null;
-
-            body.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-10">
-                    <div class="spinner"></div>
-                    <p class="mt-3 text-sm text-gray-500">Searching…</p>
-                </div>
-            `;
-            modal.classList.remove("hidden");
-
-            const querySmi = CURRENT_RESULTS[compoundIdx]?.canonical_smiles
-                          || CURRENT_RESULTS[compoundIdx]?.smiles;
-
+        async function fetchNN(querySmi, targetId, source) {
             try {
                 const resp = await fetch("/nearest_neighbors", {
                     method: "POST",
@@ -1001,82 +1050,158 @@
                     }),
                 });
                 const data = await resp.json();
+                if (!resp.ok) return { error: data.error || "unknown error" };
+                return { neighbors: data.neighbors || [], nnModel: data.nn_model || "ECFP4" };
+            } catch (err) {
+                return { error: err.message };
+            }
+        }
 
-                if (!resp.ok) {
-                    body.innerHTML = `<p class="text-sm text-danger-600">Error: ${escapeHtml(data.error || "unknown")}</p>`;
-                    return;
-                }
+        function nnGrid(neighbors, source) {
+            const barColor = source === "active" ? "bg-accent-500" : "bg-rose-400";
+            return `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    ${neighbors.map((n, i) => {
+                        const pct = Math.round(n.similarity * 100);
+                        return `
+                            <div class="border border-gray-200 rounded-lg p-3 flex flex-col items-center">
+                                <div class="text-xs text-gray-400 font-mono mb-1 self-start">#${i + 1}</div>
+                                <div class="nn-mol-host w-full flex items-center justify-center"
+                                     style="height: 160px;"
+                                     data-smiles="${escapeHtml(n.smiles)}"></div>
+                                <div class="flex items-center gap-2 w-full mt-2">
+                                    <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="conf-bar h-full ${barColor}" style="width: ${pct}%"></div>
+                                    </div>
+                                    <span class="font-mono text-xs text-gray-700 w-10 text-right">${n.similarity.toFixed(3)}</span>
+                                </div>
+                                <a href="${n.chembl_url}" target="_blank"
+                                   class="mt-2 text-xs text-accent-700 hover:underline font-mono break-all text-center">
+                                   ${escapeHtml(n.compound_id)} &#8599;
+                                </a>
+                            </div>
+                        `;
+                    }).join("")}
+                </div>
+            `;
+        }
 
-                const neighbors = data.neighbors || [];
-                const nnModel = data.nn_model || "ECFP4";
+        function nnTabLabel(source) {
+            const res = NN_TABS[source];
+            const n = (res && !res.error && res.neighbors) ? res.neighbors.length : null;
+            const base = source === "active" ? "Active neighbours" : "Inactive neighbours";
+            return n === null ? base : `${base} (${n})`;
+        }
 
-                // Update subtitle to show which fingerprint was used
-                const baseSubtitle = source === "active"
-                    ? "Most similar known active ligands"
-                    : "Most similar known inactive compounds";
-                subtitle.textContent = `${baseSubtitle} · ${nnModel} similarity`;
+        function renderNNTab(source) {
+            const body      = document.getElementById("nn_modal_body");
+            const subtitle  = document.getElementById("nn_modal_subtitle");
+            const exportBtn = document.getElementById("nn_export_btn");
+            const res = NN_TABS[source];
 
-                if (neighbors.length === 0) {
-                    body.innerHTML = `
-                        <p class="text-sm text-gray-500 text-center py-6">
-                            No reference compounds available for this target.
-                        </p>
-                    `;
-                    return;
-                }
+            const label = source === "active"
+                ? "Most similar known active ligands"
+                : "Most similar known inactive compounds";
 
-                // Stash the context so the export button can use it
+            const tabBar = `
+                <div class="flex gap-1 p-1 bg-gray-100 rounded-lg w-fit mb-4">
+                    <button type="button" data-source="active"
+                            class="nn-tab px-4 py-1.5 text-sm font-medium rounded-md">${nnTabLabel("active")}</button>
+                    <button type="button" data-source="inactive"
+                            class="nn-tab px-4 py-1.5 text-sm font-medium rounded-md">${nnTabLabel("inactive")}</button>
+                </div>
+                <p class="text-xs text-gray-500 mb-4">
+                    Query: <span class="font-mono text-gray-700 break-all">${escapeHtml(NN_META.querySmi)}</span>
+                </p>
+            `;
+
+            let content;
+            if (!res) {
+                content = `<p class="text-sm text-gray-500 text-center py-6">Not loaded.</p>`;
+            } else if (res.error) {
+                content = `<p class="text-sm text-danger-600 py-6">Error: ${escapeHtml(res.error)}</p>`;
+            } else if (!res.neighbors.length) {
+                content = `<p class="text-sm text-gray-500 text-center py-6">
+                               No known ${source} compounds for this target.
+                           </p>`;
+            } else {
+                content = nnGrid(res.neighbors, source);
+            }
+
+            body.innerHTML = tabBar + content;
+
+            document.querySelectorAll(".nn-tab").forEach(b => {
+                const on = b.dataset.source === source;
+                b.className = "nn-tab px-4 py-1.5 text-sm font-medium rounded-md " +
+                    (on ? "bg-white shadow-sm text-gray-900" : "text-gray-600 hover:text-gray-900");
+                b.onclick = () => renderNNTab(b.dataset.source);
+            });
+
+            if (res && !res.error && res.neighbors.length) {
+                subtitle.textContent = `${label} - ${res.nnModel} similarity`;
                 CURRENT_NN_CONTEXT = {
-                    querySmi,
-                    targetId,
-                    targetName,
+                    querySmi: NN_META.querySmi,
+                    targetId: NN_META.targetId,
+                    targetName: NN_META.targetName,
                     source,
-                    nnModel,
-                    neighbors,
+                    nnModel: res.nnModel,
+                    neighbors: res.neighbors,
                 };
                 exportBtn.classList.remove("hidden");
-
-                body.innerHTML = `
-                    <p class="text-xs text-gray-500 mb-4">
-                        Query: <span class="font-mono text-gray-700 break-all">${escapeHtml(querySmi)}</span>
-                    </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        ${neighbors.map((n, i) => {
-                            const pct = Math.round(n.similarity * 100);
-                            const barColor = source === "active" ? "bg-accent-500" : "bg-rose-400";
-                            return `
-                                <div class="border border-gray-200 rounded-lg p-3 flex flex-col items-center">
-                                    <div class="text-xs text-gray-400 font-mono mb-1 self-start">#${i + 1}</div>
-                                    <div class="nn-mol-host w-full flex items-center justify-center"
-                                         style="height: 160px;"
-                                         data-smiles="${escapeHtml(n.smiles)}"></div>
-                                    <div class="flex items-center gap-2 w-full mt-2">
-                                        <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                            <div class="conf-bar h-full ${barColor}" style="width: ${pct}%"></div>
-                                        </div>
-                                        <span class="font-mono text-xs text-gray-700 w-10 text-right">${n.similarity.toFixed(3)}</span>
-                                    </div>
-                                    <a href="${n.chembl_url}" target="_blank"
-                                       class="mt-2 text-xs text-accent-700 hover:underline font-mono break-all text-center">
-                                       ${escapeHtml(n.compound_id)} ↗
-                                    </a>
-                                </div>
-                            `;
-                        }).join("")}
-                    </div>
-                `;
-
-                document.querySelectorAll("#nn_modal_body .nn-mol-host").forEach(host => {
-                    try {
-                        drawSmilesInto(host.dataset.smiles, host);
-                    } catch (e) {
-                        host.innerHTML = `<div class="text-xs text-gray-400 font-mono break-all p-2">${escapeHtml(host.dataset.smiles)}</div>`;
-                    }
-                });
-
-            } catch (err) {
-                body.innerHTML = `<p class="text-sm text-danger-600">Request failed: ${escapeHtml(err.message)}</p>`;
+            } else {
+                subtitle.textContent = label;
+                CURRENT_NN_CONTEXT = null;
+                exportBtn.classList.add("hidden");
             }
+
+            document.querySelectorAll("#nn_modal_body .nn-mol-host").forEach(host => {
+                try {
+                    drawSmilesInto(host.dataset.smiles, host);
+                } catch (e) {
+                    host.innerHTML = `<div class="text-xs text-gray-400 font-mono break-all p-2">${escapeHtml(host.dataset.smiles)}</div>`;
+                }
+            });
+        }
+
+        async function openNNModal({ compoundIdx, targetId, targetName, source }) {
+            const modal     = document.getElementById("nn_modal");
+            const title     = document.getElementById("nn_modal_title");
+            const subtitle  = document.getElementById("nn_modal_subtitle");
+            const body      = document.getElementById("nn_modal_body");
+            const exportBtn = document.getElementById("nn_export_btn");
+
+            title.textContent = targetName + " (" + targetId + ")";
+            subtitle.textContent = "Searching...";
+            exportBtn.classList.add("hidden");
+            CURRENT_NN_CONTEXT = null;
+            NN_TABS = { active: null, inactive: null };
+
+            body.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10">
+                    <div class="spinner"></div>
+                    <p class="mt-3 text-sm text-gray-500">Searching...</p>
+                </div>
+            `;
+            modal.classList.remove("hidden");
+
+            const querySmi = CURRENT_RESULTS[compoundIdx]?.canonical_smiles
+                          || CURRENT_RESULTS[compoundIdx]?.smiles;
+            NN_META = { querySmi, targetId, targetName };
+
+            // Both sides are fetched together, so switching tabs is instant.
+            const [act, ina] = await Promise.all([
+                fetchNN(querySmi, targetId, "active"),
+                fetchNN(querySmi, targetId, "inactive"),
+            ]);
+            NN_TABS = { active: act, inactive: ina };
+
+            // Open on the side the user clicked, unless it is empty while the
+            // other side has results.
+            const has = s => NN_TABS[s] && !NN_TABS[s].error && NN_TABS[s].neighbors.length;
+            let start = (source === "inactive") ? "inactive" : "active";
+            const other = start === "active" ? "inactive" : "active";
+            if (!has(start) && has(other)) start = other;
+            renderNNTab(start);
         }
 
         function closeNNModal() {
